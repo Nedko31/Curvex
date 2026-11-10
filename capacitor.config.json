@@ -1,0 +1,6 @@
+{
+  "appId": "com.studioprodigy.curvex",
+  "appName": "Curvex",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
