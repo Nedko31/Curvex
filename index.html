@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>Curvex</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #101827; color: #f8fafc; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
+    body { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+    main { width: min(100%, 440px); text-align: center; }
+    .mark { width: 76px; height: 76px; margin: 0 auto 24px; border-radius: 24px; display: grid; place-items: center; background: #2563eb; font-size: 34px; font-weight: 800; }
+    h1 { margin: 0; font-size: 34px; letter-spacing: -.8px; }
+    p { color: #aab7ca; line-height: 1.6; margin: 12px 0 0; }
+    .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; padding: 10px 14px; border: 1px solid #334155; border-radius: 999px; color: #cbd5e1; font-size: 13px; }
+    .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark">C</div>
+    <h1>Curvex</h1>
+    <p>Currency converter</p>
+    <div class="status"><span class="dot"></span><span id="status">App launch test passed</span></div>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
