@@ -10,6 +10,8 @@ on:
       - 'capacitor.config.json'
       - 'index.html'
       - 'src/**'
+      - 'assets/**'
+      - 'scripts/**'
       - '.github/workflows/ios.yml'
 
 permissions:
