@@ -35,6 +35,9 @@ jobs:
       - name: Build web app
         run: npm run build
 
+      - name: Generate app icons
+        run: npm run assets:prepare && npm run assets:generate
+
       - name: Add Android platform
         run: npx cap add android
 
