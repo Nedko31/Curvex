@@ -1,28 +1,74 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#101827" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d4d50">
+  <meta name="description" content="Curvex — convert world currencies and crypto prices.">
   <title>Curvex</title>
   <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background: #101827; color: #f8fafc; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
-    body { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
-    main { width: min(100%, 440px); text-align: center; }
-    .mark { width: 76px; height: 76px; margin: 0 auto 24px; border-radius: 24px; display: grid; place-items: center; background: #2563eb; font-size: 34px; font-weight: 800; }
-    h1 { margin: 0; font-size: 34px; letter-spacing: -.8px; }
-    p { color: #aab7ca; line-height: 1.6; margin: 12px 0 0; }
-    .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; padding: 10px 14px; border: 1px solid #334155; border-radius: 999px; color: #cbd5e1; font-size: 13px; }
-    .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+    :root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172b3b;background:#f2f6fa;font-synthesis:none}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f2f6fa}
+    .hero{background:linear-gradient(125deg,#123b58,#087d72);color:white;padding:calc(28px + env(safe-area-inset-top)) 24px 34px;border-radius:0 0 34px 34px}
+    .brand{font-size:34px;font-weight:800;letter-spacing:-1px}.tagline{font-size:15px;color:#d2e9e7;margin-top:6px}
+    main{max-width:620px;margin:0 auto;padding:22px 16px calc(36px + env(safe-area-inset-bottom))}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px;background:#e4ecef;border-radius:16px;padding:5px}
+    .tab{border:0;background:transparent;padding:13px 8px;border-radius:12px;font-weight:700;color:#526576;font-size:15px}
+    .tab.active{background:#087f73;color:white;box-shadow:0 3px 10px #123b5820}
+    .panel{background:white;border:1px solid #dce5e9;border-radius:25px;padding:20px;box-shadow:0 10px 30px #203b5010}
+    label{display:block;font-size:14px;font-weight:700;color:#617281;margin:0 0 8px}
+    input,select{width:100%;height:58px;border:1.5px solid #dbe4e8;border-radius:15px;background:#fff;padding:0 14px;font:inherit;font-size:18px;color:#1c3040;outline:none}
+    input:focus,select:focus{border-color:#078477;box-shadow:0 0 0 3px #07847718}
+    .amount{margin-bottom:18px}.pair{display:grid;grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr);gap:8px;align-items:end}
+    .swap{height:54px;width:52px;border:0;border-radius:15px;background:#e5f2ef;color:#08786e;font-size:25px;margin-bottom:2px}
+    .result{margin-top:22px;background:#edf7f5;border-radius:20px;padding:18px}
+    .result small{display:block;color:#5e7775;font-size:12px;font-weight:800;letter-spacing:.7px}
+    .value{font-size:clamp(28px,7vw,38px);font-weight:800;letter-spacing:-1px;color:#15394a;overflow-wrap:anywhere;margin-top:10px}
+    .sub{font-size:13px;color:#71828c;margin-top:7px;line-height:1.45}
+    .actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:16px}
+    button.primary{border:0;border-radius:15px;background:#087f73;color:white;font-weight:800;font-size:16px;padding:15px 18px}
+    button.secondary{border:0;border-radius:15px;background:#eaf0f3;color:#33495a;font-weight:800;padding:0 20px}
+    button:disabled{opacity:.55}
+    .note{font-size:13px;line-height:1.55;color:#72818c;margin:18px 0 0}
+    .status{font-size:12px;color:#6d7d88;margin:14px 2px 0;min-height:18px}
+    .status.error{color:#b4534b}.status.ok{color:#21805e}
+    .footer{text-align:center;color:#94a1aa;font-size:11px;margin-top:20px}
+    @media(min-width:520px){main{padding-top:28px}.panel{padding:26px}.hero{padding-left:max(24px,calc((100vw - 570px)/2));}}
   </style>
 </head>
 <body>
+  <header class="hero">
+    <div class="brand">Curvex</div>
+    <div class="tagline">World currencies &amp; crypto · Simple, fast, global</div>
+  </header>
   <main>
-    <div class="mark">C</div>
-    <h1>Curvex</h1>
-    <p>Currency converter</p>
-    <div class="status"><span class="dot"></span><span id="status">App launch test passed</span></div>
+    <div class="tabs" role="tablist" aria-label="Converter type">
+      <button class="tab active" id="fiatTab" type="button">Currencies</button>
+      <button class="tab" id="cryptoTab" type="button">Crypto</button>
+    </div>
+    <section class="panel">
+      <div class="amount">
+        <label for="amount">Amount</label>
+        <input id="amount" type="number" inputmode="decimal" min="0" step="any" value="100">
+      </div>
+      <div class="pair">
+        <div><label for="from">From</label><select id="from"></select></div>
+        <button class="swap" id="swap" type="button" aria-label="Swap currencies">⇄</button>
+        <div><label for="to">To</label><select id="to"></select></div>
+      </div>
+      <div class="result" aria-live="polite">
+        <small>CONVERTED AMOUNT</small>
+        <div class="value" id="result">—</div>
+        <div class="sub" id="calculation">Loading reference rates…</div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="refresh" type="button">Refresh rates</button>
+        <button class="secondary" id="copy" type="button">Copy</button>
+      </div>
+      <div class="note" id="disclaimer">Fiat rates are reference rates, not live bank quotes. Crypto prices are market data and can change rapidly. Always check the final rate with your provider.</div>
+      <div class="status" id="status" role="status">Connecting to rate providers…</div>
+    </section>
+    <div class="footer">Curvex · Independent currency &amp; crypto converter</div>
   </main>
   <script type="module" src="/src/main.js"></script>
 </body>
