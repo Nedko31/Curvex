@@ -48,9 +48,20 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
+      - name: Build release Android App Bundle (unsigned)
+        working-directory: android
+        run: ./gradlew bundleRelease
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Curvex-debug-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Upload Android App Bundle (unsigned)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Curvex-release-AAB-unsigned
+          path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 14
