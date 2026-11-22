@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build web app
-        run: npm run build
+      - name: Build web app for test APK
+        run: VITE_ADMOB_TEST_MODE=true npm run build
 
       - name: Generate app icons
         run: npm run assets:prepare && npm run assets:generate
@@ -51,7 +51,13 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Build release Android App Bundle (unsigned)
+      - name: Build release web app with real AdMob ads
+        run: VITE_ADMOB_TEST_MODE=false npm run build
+
+      - name: Sync release web app into Android
+        run: npx cap sync android
+
+      - name: Build release Android App Bundle (unsigned, real ads)
         working-directory: android
         run: ./gradlew bundleRelease
 
