@@ -1,3 +1,6 @@
+import { Capacitor } from "@capacitor/core";
+import { AdMob, AdmobConsentStatus, BannerAdPosition, BannerAdSize } from "@capacitor-community/admob";
+
 const $ = id => document.getElementById(id);
 const FIAT = [["EUR","Euro"],["USD","US dollar"],["GBP","British pound"],["TRY","Turkish lira"],["RON","Romanian leu"],["CHF","Swiss franc"],["JPY","Japanese yen"],["CAD","Canadian dollar"],["AUD","Australian dollar"],["CNY","Chinese yuan"],["INR","Indian rupee"],["PLN","Polish zloty"],["SEK","Swedish krona"],["NOK","Norwegian krone"],["DKK","Danish krone"],["CZK","Czech koruna"],["HUF","Hungarian forint"],["BRL","Brazilian real"],["MXN","Mexican peso"],["ZAR","South African rand"],["AED","UAE dirham"],["SAR","Saudi riyal"],["HKD","Hong Kong dollar"],["SGD","Singapore dollar"],["KRW","South Korean won"],["IDR","Indonesian rupiah"],["THB","Thai baht"],["NZD","New Zealand dollar"]];
 const COINS = [["BTC","Bitcoin","BTCUSDT"],["ETH","Ethereum","ETHUSDT"],["BNB","BNB","BNBUSDT"],["SOL","Solana","SOLUSDT"],["XRP","XRP","XRPUSDT"],["DOGE","Dogecoin","DOGEUSDT"],["ADA","Cardano","ADAUSDT"],["TON","Toncoin","TONUSDT"],["LTC","Litecoin","LTCUSDT"],["TRX","TRON","TRXUSDT"]];
@@ -41,3 +44,35 @@ $("refresh").addEventListener("click",refresh);
 $("language").addEventListener("change",()=>{lang=$("language").value;localStorage.setItem("curvex-lang",lang);applyLanguage()});
 $("copy").addEventListener("click",async()=>{const value=$("result").textContent;if(!value||value==="—"||value===t("valid")){$("status").textContent=t("nothing");return}try{await navigator.clipboard.writeText(value);$("status").textContent=t("copied")}catch{$("status").textContent=t("copyError")}});
 fillCurrencies();applyLanguage();calculate();refresh();
+
+const ADMOB_TEST_MODE = import.meta.env.VITE_ADMOB_TEST_MODE !== "false";
+const ADMOB_BANNER_ID = ADMOB_TEST_MODE
+  ? "ca-app-pub-3940256099942544/6300978111"
+  : "ca-app-pub-7326151414179206/9459917889";
+
+async function startAdMob() {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    let consent = await AdMob.requestConsentInfo();
+    if (consent.isConsentFormAvailable && consent.status === AdmobConsentStatus.REQUIRED) {
+      consent = await AdMob.showConsentForm();
+    }
+    if (!consent.canRequestAds) return;
+    await AdMob.initialize();
+    await AdMob.showBanner({
+      adId: ADMOB_BANNER_ID,
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.BOTTOM_CENTER,
+      margin: 0,
+      isTesting: ADMOB_TEST_MODE
+    });
+  } catch (error) {
+    console.error("AdMob could not start; Curvex will continue without ads.", error);
+  }
+}
+
+if (document.readyState === "complete") {
+  void startAdMob();
+} else {
+  window.addEventListener("load", () => void startAdMob(), { once: true });
+}
