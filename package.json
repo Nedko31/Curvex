@@ -8,13 +8,15 @@
     "build": "vite build",
     "android:add": "cap add android",
     "android:sync": "npm run build && cap sync android",
+    "android:configure-admob": "node scripts/configure-admob.mjs",
     "assets:generate": "capacitor-assets generate",
     "assets:prepare": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
     "@capacitor/core": "^8.5.0",
-    "@capacitor/ios": "^8.5.0"
+    "@capacitor/ios": "^8.5.0",
+    "@capacitor-community/admob": "^8.4.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",
