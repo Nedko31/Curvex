@@ -35,11 +35,11 @@ jobs:
       - name: Build web app for test APK
         run: VITE_ADMOB_TEST_MODE=true npm run build
 
-      - name: Generate app icons
-        run: npm run assets:prepare && npm run assets:generate
-
       - name: Add Android platform
         run: npx cap add android
+
+      - name: Generate app icons
+        run: npm run assets:prepare && npm run assets:generate
 
       - name: Configure AdMob application ID
         run: npm run android:configure-admob
