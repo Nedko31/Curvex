@@ -61,6 +61,34 @@ jobs:
         working-directory: android
         run: ./gradlew bundleRelease
 
+      - name: Decode upload keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_BASE64"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/curvex-upload-key.jks"
+          test -s "$RUNNER_TEMP/curvex-upload-key.jks"
+
+      - name: Sign release Android App Bundle
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_PASSWORD"
+          test -n "$KEY_ALIAS"
+          test -n "$KEY_PASSWORD"
+          jarsigner \
+            -keystore "$RUNNER_TEMP/curvex-upload-key.jks" \
+            -storepass:env KEYSTORE_PASSWORD \
+            -keypass:env KEY_PASSWORD \
+            -signedjar android/app/build/outputs/bundle/release/app-release-signed.aab \
+            android/app/build/outputs/bundle/release/app-release.aab \
+            "$KEY_ALIAS"
+          jarsigner -verify android/app/build/outputs/bundle/release/app-release-signed.aab
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -68,9 +96,9 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
 
-      - name: Upload Android App Bundle (unsigned)
+      - name: Upload signed Android App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: Curvex-release-AAB-unsigned
-          path: android/app/build/outputs/bundle/release/app-release.aab
+          name: Curvex-release-AAB-signed
+          path: android/app/build/outputs/bundle/release/app-release-signed.aab
           retention-days: 14
