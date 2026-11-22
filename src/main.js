@@ -62,8 +62,21 @@ function setAdLayout(active, height = 60) {
   slot.style.minHeight = active ? Math.max(50, Math.ceil(height)) + "px" : "0";
 }
 
+function setAdStatus(message, color = "#52616b") {
+  const slot = $("ad-slot");
+  if (!slot || !ADMOB_TEST_MODE) return;
+  slot.textContent = message;
+  slot.style.fontSize = "13px";
+  slot.style.lineHeight = "1.4";
+  slot.style.padding = "8px 4px";
+  slot.style.color = color;
+  slot.style.textAlign = "center";
+}
+
 async function startAdMob() {
-  if (!isAndroid || !navigator.onLine) return;
+  if (!isAndroid) return;
+  if (!navigator.onLine) { setAdStatus("AdMob: няма интернет връзка."); return; }
+  setAdStatus("AdMob: стартиране…");
   if (adStartPromise) return adStartPromise;
   adStartPromise = (async () => {
     try {
@@ -72,6 +85,7 @@ async function startAdMob() {
         consent = await AdMob.showConsentForm();
       }
       if (!consent.canRequestAds) {
+        setAdStatus("AdMob: заявките са спрени от настройката за съгласие.", "#9a6700");
         console.info("Curvex AdMob: consent does not allow ad requests yet.");
         return;
       }
@@ -84,11 +98,13 @@ async function startAdMob() {
         await AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
           bannerVisible = true;
           setAdLayout(true);
+          setAdStatus("AdMob: тестовият банер е зареден.", "#21805e");
           console.info("Curvex AdMob: banner loaded.");
         });
         await AdMob.addListener(BannerAdPluginEvents.FailedToLoad, error => {
           bannerVisible = false;
           setAdLayout(false);
+          setAdStatus("AdMob: банерът не се зареди. Грешка: " + (error?.message || JSON.stringify(error)), "#b42318");
           console.warn("Curvex AdMob banner failed to load:", error);
         });
       }
@@ -99,12 +115,12 @@ async function startAdMob() {
         margin: 0,
         isTesting: ADMOB_TEST_MODE
       });
-      bannerVisible = true;
-      setAdLayout(true);
+      setAdStatus("AdMob: заявката е изпратена. Чакаме отговор от Google…");
       console.info("Curvex AdMob: showBanner requested.", { testMode: ADMOB_TEST_MODE });
     } catch (error) {
       bannerVisible = false;
       setAdLayout(false);
+      setAdStatus("AdMob: стартирането е неуспешно. " + (error?.message || JSON.stringify(error)), "#b42318");
       console.warn("Curvex AdMob startup failed; app remains usable:", error);
     }
   })().finally(() => { adStartPromise = null; });
